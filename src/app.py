@@ -45,6 +45,53 @@ def handle_hello():
 
     return jsonify(response_body), 200
 
+
+@app.route('/personajes', methods=['GET'])
+def get_personajes():
+
+    resultados = Personajes.query.all()
+    if resultados ==[] :
+        return jsonify({"msj":"No existen personajes"}), 400
+    results = list(map(lambda personaje:personaje.serialize(),resultados))
+
+    return jsonify(results), 200
+
+@app.route('/planetas', methods=['GET'])
+def get_planetas():
+
+    resultados = Planetas.query.all()
+    if resultados ==[] :
+        return jsonify({"msj":"No existen planetas"}), 400
+    results = list(map(lambda planeta:planeta.serialize(),resultados))
+
+    return jsonify(results), 200
+
+@app.route('/usuarios', methods=['GET'])
+def get_usuarios():
+
+    resultados = Usuarios.query.all()
+    if resultados ==[] :
+        return jsonify({"msj":"No existen Usuarios"}), 400
+    results = list(map(lambda usuario:usuario.serialize(),resultados))
+
+    return jsonify(results), 200
+
+@app.route('/favoritos', methods=['GET'])
+def get_favoritos():
+
+    resultados = Favoritos.query.all()
+    if resultados ==[] :
+        return jsonify({"msj":"No existen favoritos"}), 400
+    results = list(map(lambda favorito:favorito.serialize(),resultados))
+
+    return jsonify(results), 200
+
+
+
+
+
+
+
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
