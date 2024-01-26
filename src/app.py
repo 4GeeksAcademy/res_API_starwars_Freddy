@@ -10,6 +10,7 @@ from utils import APIException, generate_sitemap
 from admin import setup_admin
 from models import db, Personajes, Planetas, Usuarios, Favoritos
 #from models import Person
+import json
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -56,6 +57,16 @@ def get_personajes():
 
     return jsonify(results), 200
 
+@app.route('/personajes/<int:idPersonaje>', methods=['GET'])
+def get_personajesId(idPersonaje):
+    personaje = Personajes.query.filter_by(id=idPersonaje).first()
+    if personaje is None:
+        return jsonify({"msj":"No existe el personaje"}), 400
+    
+    return jsonify(personaje.serialize()),200
+
+
+
 @app.route('/planetas', methods=['GET'])
 def get_planetas():
 
@@ -65,6 +76,18 @@ def get_planetas():
     results = list(map(lambda planeta:planeta.serialize(),resultados))
 
     return jsonify(results), 200
+
+
+@app.route('/planetas/<int:idPlaneta>', methods=['GET'])
+def get_planetaId(idPlaneta):
+    planeta = Planetas.query.filter_by(id=idPlaneta).first()
+    if planeta is None:
+        return jsonify({"msj":"No existe el planeta"}), 400
+    
+    return jsonify(planeta.serialize()),200
+
+
+
 
 @app.route('/usuarios', methods=['GET'])
 def get_usuarios():
@@ -76,6 +99,17 @@ def get_usuarios():
 
     return jsonify(results), 200
 
+
+@app.route('/usuarios/<int:idUsuario>', methods=['GET'])
+def get_usuarioId(idUsuario):
+    usuario = Usuarios.query.filter_by(id=idUsuario).first()
+    if usuario is None:
+        return jsonify({"msj":"No existe el usuario"}), 400
+    
+    return jsonify(usuario.serialize()),200
+
+
+
 @app.route('/favoritos', methods=['GET'])
 def get_favoritos():
 
@@ -86,8 +120,27 @@ def get_favoritos():
 
     return jsonify(results), 200
 
+@app.route('/favoritos/<int:idFavorito>', methods=['GET'])
+def get_favoritoId(idFavorito):
+    favorito = Favoritos.query.filter_by(id=idFavorito).first()
+    if favorito is None:
+        return jsonify({"msj":"No existe el favorito"}), 400
+    
+    return jsonify(favorito.serialize()),200
 
+@app.route('/favoritos', methods=['POST'])
+def post_favoritos():
+    body = json.loads(request.data)
+    nuevoFavorito = Favoritos(
+        user_id = body["user_id"],
+        personajes_id = body["personajes_id"],
+        planetas_id = body["planetas_id"]
+    )
+    db.session.add(nuevoFavorito)
 
+    db.session.commit()
+
+    return jsonify({"msj":"Favorito Creado"}), 201
 
 
 
